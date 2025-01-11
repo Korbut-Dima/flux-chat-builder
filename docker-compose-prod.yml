@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres
+    container_name: postgres_db
+    ports:
+      - "5480:5432"
+    environment:
+      - POSTGRES_PASSWORD=fruitexpert
+      - POSTGRES_USER=fruitexpert
+      - POSTGRES_DB=fruitexpert
+    volumes:
+      - /home/korbut.dima.ur/FruitExpertData/database:/var/lib/postgresql/data
+    networks:
+      - my_network
+
+  backend:
+#    image: korbut4414/fruitexpert:latest
+    build:
+      context: ./fruitexpert/.
+      dockerfile: Dockerfile
+    container_name: backend-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      STATIC_FILES_LOCATION: file:/app/FruitExpertData/
+      UPLOAD_DIR: /app/FruitExpertData/images/
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: fruitexpert
+      DB_USER: fruitexpert
+      DB_PASSWORD: fruitexpert
+      JWT_SECRET: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+    ports:
+       - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - /home/korbut.dima.ur/FruitExpertData:/app/FruitExpertData
+    networks:
+      - my_network
+
+  frontend:
+    build:
+      context: ./FruitExpert-Front
+      dockerfile: Dockerfile
+    container_name: frontend-service
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  db_data: # Docker-managed volume for database
+    driver: local
