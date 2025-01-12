@@ -5,42 +5,35 @@ services:
     ports:
       - "5480:5432"
     environment:
-      - POSTGRES_PASSWORD=fruitexpert
-      - POSTGRES_USER=fruitexpert
-      - POSTGRES_DB=fruitexpert
-    volumes:
-      - /home/korbut.dima.ur/FruitExpertData/database:/var/lib/postgresql/data
+      - POSTGRES_PASSWORD=fluxchat
+      - POSTGRES_USER=fluxchat
+      - POSTGRES_DB=fluxchat
     networks:
       - my_network
 
   backend:
-#    image: korbut4414/fruitexpert:latest
     build:
-      context: ./fruitexpert/.
+      context: ./flux-chat-backend/.
       dockerfile: Dockerfile
     container_name: backend-service
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      STATIC_FILES_LOCATION: file:/app/FruitExpertData/
-      UPLOAD_DIR: /app/FruitExpertData/images/
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: fruitexpert
-      DB_USER: fruitexpert
-      DB_PASSWORD: fruitexpert
+      DB_NAME: fluxchat
+      DB_USER: fluxchat
+      DB_PASSWORD: fluxchat
       JWT_SECRET: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
     ports:
        - "5000:5000"
     depends_on:
       - db
-    volumes:
-      - /home/korbut.dima.ur/FruitExpertData:/app/FruitExpertData
     networks:
       - my_network
 
   frontend:
     build:
-      context: ./FruitExpert-Front
+      context: ./flux-chat-front
       dockerfile: Dockerfile
     container_name: frontend-service
     ports:
